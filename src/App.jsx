@@ -8,15 +8,38 @@ import About from "./components/About"
 import Testimonials from "./components/Testimonials"
 import Footer from "./components/Footer"
 import "./App.css"
+import { db } from "./firebase"; // Import Firestore instance
+import { collection, addDoc, getDocs } from "firebase/firestore";
 
 function App() {
+  // console.log("Firestore Database Instance:", db);
+  const fetchUsers = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "users")); // Get all docs in "users"
+      
+      // Extracting only name and age from documents
+      const usersData = querySnapshot.docs.map((doc) => ({
+        name: doc.data().name,
+        age: doc.data().age,
+      }));
+
+      console.log("All Users:", usersData); // Logs name & age of all users
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     // Simulate loading time
     const timer = setTimeout(() => {
       setIsLoading(false)
-    }, 2000)
+    }, 1000)
 
     return () => clearTimeout(timer)
   }, [])
