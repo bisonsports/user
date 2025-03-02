@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { FiArrowRight, FiStar } from "react-icons/fi"
 import { IoFootball, IoBasketball, IoTennisball, IoGolf, IoBicycle, IoAmericanFootball } from "react-icons/io5"
 import "./SportsCards.css"
+import "../assets/images/basketball.jpg"
 
 const SportsCards = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -23,7 +24,7 @@ const SportsCards = () => {
       id: 2,
       title: "Basketball",
       icon: <IoBasketball />,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHTSN2CFLHnnlZIb7DiLrN9d69OqBmVfUpVw&s",
       rating: 4.6,
       price: "$12/hr",
       featured: false,

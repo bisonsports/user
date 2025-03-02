@@ -9,7 +9,7 @@ import Testimonials from "./components/Testimonials"
 import Footer from "./components/Footer"
 import "./App.css"
 import { db } from "./firebase"; // Import Firestore instance
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 
 function App() {
   // console.log("Firestore Database Instance:", db);
