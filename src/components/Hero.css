@@ -1,0 +1,254 @@
+.hero {
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.1);
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-slide.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.slide-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(139, 92, 246, 0.6), rgba(124, 58, 237, 0.3));
+}
+
+.hero-content {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: var(--white);
+  text-align: center;
+  padding-top: 80px;
+}
+
+.text-content {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.text-content.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-title {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: 2px;
+  color: aliceblue;
+}
+
+.hero-subtitle {
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  opacity: 0.9;
+  color: #8b5cf6;
+}
+
+.hero-description {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  opacity: 0.8;
+  color: #8b5cf6;
+}
+
+.search-form {
+  display: flex;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: rgba(139, 92, 246, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 50px;
+  overflow: hidden;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  animation: fadeIn 1s ease 0.6s forwards;
+  opacity: 0;
+}
+
+.search-input-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.search-icon {
+  color: #8b5cf6;
+  opacity: 0.8;
+  margin-right: 10px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 15px 0;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: #8b5cf6;
+  background: transparent;
+}
+
+.search-input::placeholder {
+  color: rgba(139, 92, 246, 0.6);
+}
+
+.search-button {
+  background-color: #8b5cf6;
+  color: var(--white);
+  border: none;
+  padding: 15px 30px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition-medium);
+}
+
+.search-button:hover {
+  background-color: rgba(139, 92, 246, 0.8);
+  transform: translateX(5px);
+}
+
+.search-button-icon {
+  transition: transform var(--transition-medium);
+}
+
+.search-button:hover .search-button-icon {
+  transform: rotate(-15deg);
+}
+
+.explore-button {
+  margin-top: 2rem;
+  background: transparent;
+  border: 2px solid #8b5cf6;
+  color: #8b5cf6;
+  padding: 12px 30px;
+  border-radius: 50px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition-medium);
+  animation: fadeIn 1s ease 0.9s forwards;
+  opacity: 0;
+}
+
+.explore-button:hover {
+  background: #8b5cf6;
+  color: var(--white);
+  transform: translateY(-5px);
+}
+
+.explore-icon {
+  transition: transform var(--transition-medium);
+}
+
+.explore-button:hover .explore-icon {
+  transform: translateX(5px);
+}
+
+.slider-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 2rem;
+  animation: fadeIn 1s ease 1.2s forwards;
+  opacity: 0;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(139, 92, 246, 0.3);
+  cursor: pointer;
+  transition: all var(--transition-medium);
+  position: relative;
+  overflow: hidden;
+}
+
+.indicator::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #8b5cf6;
+  transform: scale(0);
+  transition: transform var(--transition-medium);
+  border-radius: 50%;
+}
+
+.indicator.active::after {
+  transform: scale(1);
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+  }
+
+  .search-form {
+    flex-direction: column;
+    border-radius: 20px;
+    margin: 0 20px;
+  }
+
+  .search-button {
+    border-radius: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

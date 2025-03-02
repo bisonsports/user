@@ -1,0 +1,161 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 0;
+  z-index: 1000;
+  transition: all var(--transition-medium);
+  background-color: aliceblue;
+}
+
+.navbar.scrolled {
+  background-color: aliceblue;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: 15px 0;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  z-index: 1001;
+}
+
+.logo h1 {
+  color: #000;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  transition: all var(--transition-medium);
+}
+
+.logo h1:hover {
+  transform: scale(1.05);
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  position: relative;
+  padding: 5px 0;
+  transition: all var(--transition-medium);
+  color: #000;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: rgba(0, 0, 0, 0.3);
+  transition: width var(--transition-medium);
+}
+
+.nav-link:hover {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-icon {
+  font-size: 1.2rem;
+  transition: all var(--transition-medium);
+  color: #000;
+}
+
+.nav-link:hover .nav-icon {
+  transform: rotate(15deg);
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.menu-toggle {
+  display: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 1001;
+  color: #000;
+}
+
+.menu-dots {
+  display: none;
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.menu-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.3);
+  transition: all var(--transition-medium);
+}
+
+.menu-dots span.active {
+  background-color: #000;
+  transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    height: 100vh;
+    background-color: aliceblue;
+    flex-direction: column;
+    justify-content: center;
+    padding: 50px 20px;
+    transition: all var(--transition-medium);
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-menu.active {
+    right: 0;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .nav-link {
+    font-size: 1.2rem;
+  }
+
+  .menu-dots {
+    display: flex;
+  }
+}
+
