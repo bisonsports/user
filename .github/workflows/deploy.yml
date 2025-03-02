@@ -32,10 +32,12 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: dist
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+          with:
+          name: my-artifact
+          path: ./path-to-artifact
+
 
   deploy:
     needs: build
