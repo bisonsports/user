@@ -124,7 +124,7 @@
   margin-right: 10px;
 }
 
-.search-input {
+.search-input1 {
   width: 100%;
   padding: 15px 0;
   border: none;
@@ -134,7 +134,7 @@
   background: transparent;
 }
 
-.search-input::placeholder {
+.search-input1::placeholder {
   color: rgba(0, 0, 0, 0.5);
 }
 

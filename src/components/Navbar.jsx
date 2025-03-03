@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Menu, X, User, Play, Calendar, Dumbbell, LogOut } from "lucide-react"
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth"
 import { getFirestore, doc, getDoc } from "firebase/firestore"
+import { Link } from "react-router-dom"
 import { db } from "../firebase"
 import AuthModal from "./AuthModal"
 import "./Navbar.css"
@@ -95,10 +96,10 @@ const Navbar = () => {
     <>
       <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
         <div className="container navbar-container">
-          <div className="logo">
+          <Link to="/" className="logo">
             <h1>PLAYO</h1>
             <span className="logo-dot"></span>
-          </div>
+          </Link>
 
           {/* Desktop welcome message */}
           {user && (

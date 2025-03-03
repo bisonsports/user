@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { FiArrowRight, FiStar } from "react-icons/fi"
 import { IoFootball, IoBasketball, IoTennisball, IoGolf, IoBicycle, IoAmericanFootball } from "react-icons/io5"
+import { Link } from 'react-router-dom'
 import "./SportsCards.css"
 import "../assets/images/basketball.jpg"
 
@@ -96,10 +97,10 @@ const SportsCards = () => {
       <div className="container">
         <div className={`section-header ${isVisible ? "visible" : ""}`}>
           <h2 className="section-title">Book Venues</h2>
-          <a href="#" className="view-all">
+          <Link to="/venues" className="view-all">
             <span>See All Venues</span>
             <FiArrowRight />
-          </a>
+          </Link>
         </div>
 
         <div className="cards-container">

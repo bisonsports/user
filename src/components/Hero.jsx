@@ -84,7 +84,7 @@ const Hero = () => {
                 placeholder="Enter your location"
                 value={searchValue}
                 onChange={handleSearchChange}
-                className="search-input"
+                className="search-input1"
               />
             </div>
             <button type="submit" className="search-button">
