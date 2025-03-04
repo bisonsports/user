@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from "./components/Navbar"
+import ScrollToTop from "./components/ScrollToTop"
 import "./App.css"
 import { db } from "./firebase";
 import { collection, getDocs } from "firebase/firestore";
@@ -51,6 +52,7 @@ function App() {
   return (
     <Router basename="/">
       <div className="App">
+        <ScrollToTop />
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />

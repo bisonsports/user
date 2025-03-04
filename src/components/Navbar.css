@@ -7,13 +7,13 @@
   z-index: 1000;
   transition: all var(--transition-medium);
   background-color: rgba(240, 248, 255, 0.95);
-  box-shadow: 0 40px 20px rgba(147, 51, 234, 0.25);
+  box-shadow: 0 20px 20px rgba(147, 51, 234, 0.15);
 }
 
 .navbar.scrolled {
   background-color: rgba(240, 248, 255, 0.85);
   backdrop-filter: blur(10px);
-  box-shadow: 0 40px 20px rgba(147, 51, 234, 0.25);
+  box-shadow: 0 20px 20px rgba(147, 51, 234, 0.15);
   padding: 15px 0;
 }
 
