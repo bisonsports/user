@@ -49,7 +49,7 @@ function App() {
   }
 
   return (
-    <Router basename="/user">
+    <Router basename="/">
       <div className="App">
         <Navbar />
         <Routes>
