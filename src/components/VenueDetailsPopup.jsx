@@ -3,12 +3,14 @@ import { FiX, FiClock, FiMapPin, FiArrowRight } from 'react-icons/fi';
 import { IoFootball, IoBasketball, IoTennisball, IoGolf, IoBicycle, IoAmericanFootball, IoBaseball, IoFitness } from 'react-icons/io5';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
+import UserBookingModal from './UserBookingModal';
 import './VenueDetailsPopup.css';
 
 const VenueDetailsPopup = ({ venue, onClose }) => {
   const [courts, setCourts] = useState([]);
   const [selectedCourt, setSelectedCourt] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showBookingModal, setShowBookingModal] = useState(false);
 
   const getSportIcon = (sport) => {
     switch (sport.toLowerCase()) {
@@ -73,6 +75,14 @@ const VenueDetailsPopup = ({ venue, onClose }) => {
 
   const SportIcon = getSportIcon(venue.sport);
 
+  const handleBookNowClick = () => {
+    if (!selectedCourt) {
+      // If no court is selected, select the first one
+      setSelectedCourt(courts[0]);
+    }
+    setShowBookingModal(true);
+  };
+
   if (loading) {
     return (
       <div className="popup-overlay">
@@ -88,7 +98,7 @@ const VenueDetailsPopup = ({ venue, onClose }) => {
 
   return (
     <div className="popup-overlay">
-      <div className="popup-content venue-details-popup">
+      <div className="popup-content">
         <button className="close-button" onClick={onClose}>
           <FiX />
         </button>
@@ -176,13 +186,26 @@ const VenueDetailsPopup = ({ venue, onClose }) => {
                 {venue.address}
               </a>
             </div>
-            <button className="book-now-btn">
+            <button 
+              className="book-now-btn"
+              onClick={handleBookNowClick}
+              disabled={courts.length === 0}
+            >
               Book Now
               <FiArrowRight />
             </button>
           </div>
         </div>
       </div>
+
+      {showBookingModal && selectedCourt && (
+        <UserBookingModal
+          isOpen={showBookingModal}
+          onClose={() => setShowBookingModal(false)}
+          court={selectedCourt}
+          venue={venue}
+        />
+      )}
     </div>
   );
 };
