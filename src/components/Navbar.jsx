@@ -23,10 +23,22 @@ const Navbar = () => {
       setUserDataLoading(true)
       const userDoc = await getDoc(doc(db, 'users', uid))
       if (userDoc.exists()) {
-        setUserData(userDoc.data())
+        const data = userDoc.data()
+        setUserData(data)
+        // Cache the user data in localStorage with 90 days expiry
+        localStorage.setItem('userData', JSON.stringify({
+          uid,
+          ...data,
+          lastFetched: new Date().getTime()
+        }))
+      } else {
+        setUserData(null)
+        localStorage.removeItem('userData')
       }
     } catch (error) {
       console.error("Error fetching user data:", error)
+      setUserData(null)
+      localStorage.removeItem('userData')
     } finally {
       setUserDataLoading(false)
     }
@@ -37,9 +49,30 @@ const Navbar = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user)
       if (user) {
-        fetchUserData(user.uid)
+        // Check if we have cached data and if it's less than 90 days old
+        const cachedData = localStorage.getItem('userData')
+        if (cachedData) {
+          try {
+            const { lastFetched, uid } = JSON.parse(cachedData)
+            const isExpired = Date.now() - lastFetched > 90 * 24 * 60 * 60 * 1000 // 90 days
+            if (!isExpired && uid === user.uid) {
+              const { uid: _, lastFetched: __, ...data } = JSON.parse(cachedData)
+              setUserData(data)
+              setUserDataLoading(false)
+            } else {
+              fetchUserData(user.uid)
+            }
+          } catch (error) {
+            console.error("Error parsing cached data:", error)
+            localStorage.removeItem('userData')
+            fetchUserData(user.uid)
+          }
+        } else {
+          fetchUserData(user.uid)
+        }
       } else {
         setUserData(null)
+        localStorage.removeItem('userData')
       }
       setLoading(false)
     })
@@ -77,6 +110,8 @@ const Navbar = () => {
     try {
       const auth = getAuth()
       await signOut(auth)
+      setUserData(null)
+      localStorage.removeItem('userData')
       setIsMenuOpen(false)
     } catch (error) {
       console.error("Error signing out:", error)
@@ -102,7 +137,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop welcome message */}
-          {user && (
+          {user && userData && (
             <div className="welcome-message desktop-only">
               {userDataLoading ? (
                 <div className="welcome-loading">
@@ -113,9 +148,9 @@ const Navbar = () => {
                   </div>
                   <span>Loading...</span>
                 </div>
-              ) : userData ? (
+              ) : (
                 `Welcome, ${userData.name}`
-              ) : null}
+              )}
             </div>
           )}
 
@@ -125,7 +160,7 @@ const Navbar = () => {
 
           <div className={`nav-menu ${isMenuOpen ? "active" : ""}`}>
             {/* Mobile welcome message */}
-            {user && (
+            {user && userData && (
               <div className="welcome-message mobile-only">
                 {userDataLoading ? (
                   <div className="welcome-loading">
@@ -136,9 +171,9 @@ const Navbar = () => {
                     </div>
                     <span>Loading...</span>
                   </div>
-                ) : userData ? (
+                ) : (
                   `Welcome, ${userData.name}`
-                ) : null}
+                )}
               </div>
             )}
 
@@ -159,7 +194,7 @@ const Navbar = () => {
 
             <div className="nav-buttons">
               <button className="btn btn-secondary login-btn" onClick={handleAuthClick}>
-                {user ? (
+                {user && userData ? (
                   <>
                     <LogOut className="btn-icon" />
                     <span>Logout</span>

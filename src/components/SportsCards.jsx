@@ -2,70 +2,76 @@
 
 import { useState, useEffect, useRef } from "react"
 import { FiArrowRight, FiStar } from "react-icons/fi"
-import { IoFootball, IoBasketball, IoTennisball, IoGolf, IoBicycle, IoAmericanFootball } from "react-icons/io5"
-import { Link } from 'react-router-dom'
+import { IoFootball, IoBasketball, IoTennisball, IoGolf, IoBicycle, IoAmericanFootball, IoBaseball, IoFitness } from "react-icons/io5"
+import { Link, useNavigate } from 'react-router-dom'
 import "./SportsCards.css"
-import "../assets/images/basketball.jpg"
 
 const SportsCards = () => {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef(null)
+  const navigate = useNavigate()
 
   const sportsCards = [
     {
       id: 1,
       title: "Football",
       icon: <IoFootball />,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
       rating: 4.8,
-      price: "$15/hr",
+      price: "₹500/hr",
       featured: true,
+      sport: "football"
     },
     {
       id: 2,
       title: "Basketball",
       icon: <IoBasketball />,
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHTSN2CFLHnnlZIb7DiLrN9d69OqBmVfUpVw&s",
+      image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
       rating: 4.6,
-      price: "$12/hr",
+      price: "₹400/hr",
       featured: false,
+      sport: "basketball"
     },
     {
       id: 3,
       title: "Tennis",
       icon: <IoTennisball />,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
       rating: 4.9,
-      price: "$20/hr",
+      price: "₹600/hr",
       featured: true,
+      sport: "tennis"
     },
     {
       id: 4,
-      title: "Golf",
-      icon: <IoGolf />,
-      image: "/placeholder.svg?height=300&width=400",
+      title: "Badminton",
+      icon: <IoTennisball />,
+      image: "https://images.unsplash.com/photo-1613918431703-aa508cbffb03?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
       rating: 4.7,
-      price: "$25/hr",
+      price: "₹300/hr",
       featured: false,
+      sport: "badminton"
     },
     {
       id: 5,
-      title: "Cycling",
-      icon: <IoBicycle />,
-      image: "/placeholder.svg?height=300&width=400",
-      rating: 4.5,
-      price: "$10/hr",
-      featured: false,
+      title: "Cricket",
+      icon: <IoBaseball />,
+      image: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
+      rating: 4.8,
+      price: "₹800/hr",
+      featured: true,
+      sport: "cricket"
     },
     {
       id: 6,
-      title: "Rugby",
-      icon: <IoAmericanFootball />,
-      image: "/placeholder.svg?height=300&width=400",
-      rating: 4.4,
-      price: "$18/hr",
-      featured: true,
-    },
+      title: "Fitness",
+      icon: <IoFitness />,
+      image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
+      rating: 4.5,
+      price: "₹200/hr",
+      featured: false,
+      sport: "fitness"
+    }
   ]
 
   useEffect(() => {
@@ -92,6 +98,10 @@ const SportsCards = () => {
     }
   }, [])
 
+  const handleSportClick = (sport) => {
+    navigate('/venues', { state: { selectedSport: sport } });
+  };
+
   return (
     <section className="sports-cards" ref={sectionRef}>
       <div className="container">
@@ -109,9 +119,10 @@ const SportsCards = () => {
               key={card.id}
               className={`card ${isVisible ? "visible" : ""}`}
               style={{ animationDelay: `${index * 0.1}s` }}
+              onClick={() => handleSportClick(card.sport)}
             >
               <div className="card-image">
-                <img src={card.image || "/placeholder.svg"} alt={card.title} />
+                <img src={card.image} alt={card.title} />
                 {card.featured && <span className="featured-badge">FEATURED</span>}
               </div>
               <div className="card-content">
