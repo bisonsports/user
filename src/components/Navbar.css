@@ -137,9 +137,7 @@
 }
 
 .welcome-message.desktop-only {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  margin-left: 1rem;
 }
 
 .welcome-message.mobile-only {
@@ -152,11 +150,11 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -10px);
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translateY(0);
   }
 }
 

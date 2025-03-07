@@ -1,0 +1,195 @@
+.rehab-page {
+  /* padding: 2rem; */
+  padding-top: 5rem;
+  /* max-width: 1200px; */
+  margin: 0 auto;
+  background-color: #F7FAFC;
+}
+
+.rehab-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem 0;
+  background: linear-gradient(135deg, #E6FFFA 0%, #F0FFF4 100%);
+  border-radius: 16px;
+}
+
+.rehab-header h1 {
+  font-size: 2.5rem;
+  color: #234E52;
+  margin-bottom: 1rem;
+}
+
+.rehab-header p {
+  color: #2C7A7B;
+  font-size: 1.1rem;
+}
+
+.specialists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  padding: 0rem 1rem;
+}
+
+.specialist-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #E6FFFA;
+}
+
+.specialist-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(44, 122, 123, 0.1);
+}
+
+.specialist-image {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+}
+
+.specialist-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.specialist-card:hover .specialist-image img {
+  transform: scale(1.05);
+}
+
+.specialist-rating {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #234E52;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.specialist-rating span {
+  color: #38B2AC;
+  margin-right: 0.25rem;
+}
+
+.specialist-type {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background: rgba(56, 178, 172, 0.9);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.specialist-info {
+  padding: 1.5rem;
+}
+
+.specialist-info h2 {
+  font-size: 1.5rem;
+  color: #234E52;
+  margin-bottom: 1rem;
+}
+
+.specialization-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.spec-tag {
+  background: #E6FFFA;
+  color: #2C7A7B;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid #B2F5EA;
+}
+
+.specialist-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  background: #F7FAFC;
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+.detail-item {
+  color: #4A5568;
+  font-size: 0.875rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-item strong {
+  color: #234E52;
+}
+
+.detail-item.price {
+  font-size: 1rem;
+  color: #234E52;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #E6FFFA;
+}
+
+.book-specialist-btn {
+  width: 100%;
+  background: #38B2AC;
+  color: white;
+  border: none;
+  padding: 0.875rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.book-specialist-btn:hover {
+  background: #319795;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(56, 178, 172, 0.2);
+}
+
+@media (max-width: 768px) {
+  .rehab-page {
+    /* padding: 1rem; */
+  }
+
+  .rehab-header {
+    padding: 1.5rem 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .rehab-header h1 {
+    font-size: 2rem;
+  }
+
+  .specialists-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .specialist-card {
+    max-width: 100%;
+  }
+
+  .specialist-image {
+    height: 200px;
+  }
+} 

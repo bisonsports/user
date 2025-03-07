@@ -9,6 +9,8 @@ import { db } from "./firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import Home from './pages/Home';
 import VenueListing from './pages/VenueListing';
+import TrainersPage from './pages/TrainersPage';
+import RehabilitationPage from './pages/RehabilitationPage';
 
 function App() {
   const fetchUserData = async () => {
@@ -68,6 +70,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/venues" element={<VenueListing />} />
+          <Route path="/trainers" element={<TrainersPage />} />
+          <Route path="/rehabilitation" element={<RehabilitationPage />} />
         </Routes>
       </div>
     </Router>

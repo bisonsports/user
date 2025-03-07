@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Menu, X, User, Play, Calendar, Dumbbell, LogOut } from "lucide-react"
+import { Menu, X, User, Play, Calendar, Dumbbell, Heart, LogOut } from "lucide-react"
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth"
 import { getFirestore, doc, getDoc } from "firebase/firestore"
 import { Link } from "react-router-dom"
@@ -178,18 +178,18 @@ const Navbar = () => {
             )}
 
             <div className="nav-links">
-              <a href="#" className="nav-link">
-                <Play className="nav-icon" />
-                <span>Play</span>
-              </a>
-              <a href="#" className="nav-link">
+              <Link to="/venues" className="nav-link">
                 <Calendar className="nav-icon" />
                 <span>Book</span>
-              </a>
-              <a href="#" className="nav-link">
+              </Link>
+              <Link to="/trainers" className="nav-link">
                 <Dumbbell className="nav-icon" />
                 <span>Train</span>
-              </a>
+              </Link>
+              <Link to="/rehabilitation" className="nav-link">
+                <Heart className="nav-icon" />
+                <span>Rehabilitation</span>
+              </Link>
             </div>
 
             <div className="nav-buttons">
