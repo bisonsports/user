@@ -21,6 +21,7 @@
   overflow-y: auto;
   position: relative;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1101;
 }
 
 .modal-content {
@@ -44,7 +45,7 @@
   justify-content: center;
   border-radius: 50%;
   transition: all 0.2s ease;
-  z-index: 1200;
+  z-index: 1102;
   width: 2.5rem;
   height: 2.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -95,17 +96,59 @@
   transition: border-color 0.2s ease;
 }
 
-.duration-input {
-  width: 120px !important;
-  padding-right: 0.5rem !important;
-  text-align: center;
+.date-duration-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.duration-input::-webkit-inner-spin-button,
-.duration-input::-webkit-outer-spin-button {
-  opacity: 1;
-  height: 30px;
+.date-input-container {
+  flex: 0 0 40%;
+}
+
+.duration-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  /* gap: 0.5rem; */
+  flex-direction: column;
+}
+
+.duration-input {
+  width: 120px;
+  text-align: center;
+  padding-right: 0.5rem;
+}
+
+.duration-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.duration-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  background: white;
+  color: #4B5563;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.duration-button:hover {
+  background-color: #F3F4F6;
+  border-color: #6B46C1;
+  color: #6B46C1;
+}
+
+.duration-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .form-group input:focus,
@@ -125,6 +168,7 @@
   transition: border-color 0.2s ease;
   cursor: pointer;
   background-color: white;
+  height: 3rem;
 }
 
 .form-group input[type="date"]::-webkit-calendar-picker-indicator {
@@ -328,6 +372,63 @@
   cursor: not-allowed;
 }
 
+.payment-confirmation {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.payment-image {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 2rem;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.payment-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.payment-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 150px;
+}
+
+.cancel-payment {
+  background-color: white;
+  border: 1px solid #E2E8F0;
+  color: #4B5563;
+}
+
+.cancel-payment:hover {
+  background-color: #F3F4F6;
+  border-color: #CBD5E0;
+}
+
+.confirm-payment {
+  background-color: #6B46C1;
+  border: none;
+  color: white;
+}
+
+.confirm-payment:hover {
+  background-color: #553C9A;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(107, 70, 193, 0.2);
+}
+
+.confirm-payment:disabled {
+  background-color: #9CA3AF;
+  cursor: not-allowed;
+}
+
 @media (max-width: 640px) {
   .booking-modal {
     padding: 1.5rem;
@@ -341,5 +442,50 @@
   .close-button {
     right: calc(2.5% + 1rem);
     top: 1.5rem;
+  }
+
+  .date-duration-container {
+    flex-direction: column;
+  }
+
+  .date-input-container {
+    flex: none;
+    width: 100%;
+  }
+
+  .duration-container {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .duration-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .duration-button {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    background: white;
+    color: #4B5563;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .duration-button:hover {
+    background-color: #F3F4F6;
+    border-color: #6B46C1;
+    color: #6B46C1;
+  }
+
+  .duration-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 } 

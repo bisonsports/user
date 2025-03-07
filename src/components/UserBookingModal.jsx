@@ -3,6 +3,7 @@ import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import './UserBookingModal.css';
 import { FiX, FiClock, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import AuthModal from './AuthModal';
 
 const UserBookingModal = ({ isOpen, onClose, court, venue }) => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,8 @@ const UserBookingModal = ({ isOpen, onClose, court, venue }) => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showPaymentConfirmation, setShowPaymentConfirmation] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const slotsGridRef = useRef(null);
 
   useEffect(() => {
@@ -186,6 +189,34 @@ const UserBookingModal = ({ isOpen, onClose, court, venue }) => {
 
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (!userData || !userData.uid) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    setShowPaymentConfirmation(true);
+  };
+
+  const handleAuthSuccess = (user) => {
+    setShowAuthModal(false);
+    // Store the user data in localStorage if not already stored
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (!userData || userData.uid !== user.uid) {
+      localStorage.setItem('userData', JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+        lastFetched: new Date().getTime()
+      }));
+    }
+    setShowPaymentConfirmation(true);
+  };
+
+  const handleCancelPayment = () => {
+    setShowPaymentConfirmation(false);
+  };
+
+  const handleConfirmPayment = async () => {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (!userData || !userData.uid) {
       setError('Please login to book a court');
       return;
     }
@@ -251,32 +282,77 @@ const UserBookingModal = ({ isOpen, onClose, court, venue }) => {
             <h3>Booking Successful!</h3>
             <p>Your court has been booked successfully.</p>
           </div>
+        ) : showPaymentConfirmation ? (
+          <div className="payment-confirmation">
+            <img 
+              src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" 
+              alt="Payment Confirmation" 
+              className="payment-image"
+            />
+            <div className="payment-buttons">
+              <button 
+                className="payment-button cancel-payment"
+                onClick={handleCancelPayment}
+              >
+                Cancel
+              </button>
+              <button 
+                className="payment-button confirm-payment"
+                onClick={handleConfirmPayment}
+                disabled={loading}
+              >
+                {loading ? 'Processing...' : 'Payment Successful'}
+              </button>
+            </div>
+          </div>
         ) : (
           <div className="modal-content">
             <div className="form-group">
-              <label>Select Date</label>
-              <input
-                type="date"
-                min={new Date().toISOString().split('T')[0]}
-                value={formData.date}
-                onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Duration (minutes)</label>
-              <input
-                type="number"
-                min={court.minimumBookingDuration || 60}
-                max={180}
-                step={30}
-                value={formData.duration}
-                onChange={(e) => {
-                  const value = Math.min(180, Math.max(court.minimumBookingDuration || 60, Number(e.target.value)));
-                  setFormData(prev => ({ ...prev, duration: value }));
-                }}
-                className="duration-input"
-              />
+              
+              <div className="date-duration-container">
+                <div className="date-input-container">
+                <label>Select Date</label>
+                  <input
+                    type="date"
+                    value={formData.date}
+                    onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                    min={new Date().toISOString().split('T')[0]}
+                  />
+                </div>
+                <div className="duration-container">
+                  <label>Duration (minutes)</label>
+                  <div className="duration-buttons">
+                    <button
+                      type="button"
+                      className="duration-button"
+                      onClick={() => setFormData(prev => ({ ...prev, duration: Math.max(court.minimumBookingDuration || 60, prev.duration - 30) }))}
+                      disabled={formData.duration <= (court.minimumBookingDuration || 60)}
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      className="duration-input"
+                      value={formData.duration}
+                      onChange={(e) => {
+                        const value = Math.min(180, Math.max(court.minimumBookingDuration || 60, Number(e.target.value)));
+                        setFormData(prev => ({ ...prev, duration: value }));
+                      }}
+                      min={court.minimumBookingDuration || 60}
+                      max={180}
+                      step={30}
+                    />
+                    <button
+                      type="button"
+                      className="duration-button"
+                      onClick={() => setFormData(prev => ({ ...prev, duration: Math.min(180, prev.duration + 30) }))}
+                      disabled={formData.duration >= 180}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="time-slots">
@@ -352,6 +428,14 @@ const UserBookingModal = ({ isOpen, onClose, court, venue }) => {
           </div>
         )}
       </div>
+
+      {showAuthModal && (
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          onSuccess={handleAuthSuccess}
+        />
+      )}
     </div>
   );
 };

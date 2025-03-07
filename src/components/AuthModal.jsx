@@ -111,7 +111,19 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
         createdAt: new Date().toISOString()
       });
 
-      onAuthSuccess(userCredential.user);
+      // Store user data in localStorage
+      const userData = {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        name: formData.name,
+        mobileNo: formData.mobileNo,
+        lastFetched: new Date().getTime()
+      };
+      localStorage.setItem('userData', JSON.stringify(userData));
+
+      if (typeof onAuthSuccess === 'function') {
+        onAuthSuccess(userCredential.user);
+      }
       onClose(); // Close modal after successful signup
     } catch (error) {
       setError(getErrorMessage(error.code));
@@ -132,9 +144,22 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
         formData.email,
         formData.password
       );
-      onAuthSuccess(userCredential.user);
+
+      // Store user data in localStorage
+      const userData = {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        lastFetched: new Date().getTime()
+      };
+      localStorage.setItem('userData', JSON.stringify(userData));
+
+      // Call onAuthSuccess with the user data if it exists
+      if (typeof onAuthSuccess === 'function') {
+        onAuthSuccess(userCredential.user);
+      }
       onClose(); // Close modal after successful login
     } catch (error) {
+      console.error('Login error:', error);
       setError(getErrorMessage(error.code));
     } finally {
       setLoading(false);
@@ -157,7 +182,19 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
         createdAt: new Date().toISOString()
       }, { merge: true }); // Use merge to preserve existing data
 
-      onAuthSuccess(googleUser);
+      // Store user data in localStorage
+      const userData = {
+        uid: googleUser.uid,
+        email: googleUser.email,
+        name: googleUser.displayName,
+        mobileNo: mobileNumber,
+        lastFetched: new Date().getTime()
+      };
+      localStorage.setItem('userData', JSON.stringify(userData));
+
+      if (typeof onAuthSuccess === 'function') {
+        onAuthSuccess(googleUser);
+      }
       setShowMobileModal(false); // Close the mobile modal
       onClose(); // Close the main auth modal
     } catch (error) {
@@ -182,18 +219,31 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
         setGoogleUser(result.user);
         setShowMobileModal(true);
       } else {
-        const userData = userDoc.data();
-        if (!userData.mobileNo) {
+        const firestoreData = userDoc.data();
+        if (!firestoreData.mobileNo) {
           // If user exists but has no mobile number, show mobile number collection modal
           setGoogleUser(result.user);
           setShowMobileModal(true);
         } else {
+          // Store user data in localStorage
+          const userData = {
+            uid: result.user.uid,
+            email: result.user.email,
+            name: result.user.displayName || firestoreData.name,
+            mobileNo: firestoreData.mobileNo,
+            lastFetched: new Date().getTime()
+          };
+          localStorage.setItem('userData', JSON.stringify(userData));
+
           // If user exists with mobile number, proceed with login
-          onAuthSuccess(result.user);
+          if (typeof onAuthSuccess === 'function') {
+            onAuthSuccess(result.user);
+          }
           onClose();
         }
       }
     } catch (error) {
+      console.error('Google Sign In error:', error);
       setError(getErrorMessage(error.code));
     } finally {
       setLoading(false);
