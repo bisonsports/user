@@ -7,6 +7,7 @@ import { getFirestore, doc, getDoc } from "firebase/firestore"
 import { Link } from "react-router-dom"
 import { db } from "../firebase"
 import AuthModal from "./AuthModal"
+import ProfileDropdown from "./ProfileDropdown"
 import "./Navbar.css"
 
 const Navbar = () => {
@@ -24,7 +25,10 @@ const Navbar = () => {
       const userDoc = await getDoc(doc(db, 'users', uid))
       if (userDoc.exists()) {
         const data = userDoc.data()
-        setUserData(data)
+        setUserData({
+          ...data,
+          uid // Include the UID in userData
+        })
         // Cache the user data in localStorage with 90 days expiry
         localStorage.setItem('userData', JSON.stringify({
           uid,
@@ -53,11 +57,13 @@ const Navbar = () => {
         const cachedData = localStorage.getItem('userData')
         if (cachedData) {
           try {
-            const { lastFetched, uid } = JSON.parse(cachedData)
+            const { lastFetched, uid, ...data } = JSON.parse(cachedData)
             const isExpired = Date.now() - lastFetched > 90 * 24 * 60 * 60 * 1000 // 90 days
             if (!isExpired && uid === user.uid) {
-              const { uid: _, lastFetched: __, ...data } = JSON.parse(cachedData)
-              setUserData(data)
+              setUserData({
+                ...data,
+                uid // Include the UID when setting from cache
+              })
               setUserDataLoading(false)
             } else {
               fetchUserData(user.uid)
@@ -193,19 +199,18 @@ const Navbar = () => {
             </div>
 
             <div className="nav-buttons">
-              <button className="btn btn-secondary login-btn" onClick={handleAuthClick}>
-                {user && userData ? (
-                  <>
-                    <LogOut className="btn-icon" />
-                    <span>Logout</span>
-                  </>
-                ) : (
-                  <>
-                    <User className="btn-icon" />
-                    <span>Login / Signup</span>
-                  </>
-                )}
-              </button>
+              {!user && (
+                <button className="btn btn-secondary login-btn" onClick={handleAuthClick}>
+                  <User className="btn-icon" />
+                  <span>Login / Signup</span>
+                </button>
+              )}
+              {user && userData && (
+                <ProfileDropdown 
+                  userData={userData} 
+                  onLogout={handleLogout}
+                />
+              )}
             </div>
           </div>
         </div>

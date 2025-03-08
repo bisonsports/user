@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import './UserBookingModal.css';
 import { FiX, FiClock, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
@@ -215,37 +215,41 @@ const UserBookingModal = ({ isOpen, onClose, court, venue }) => {
   };
 
   const handleConfirmPayment = async () => {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (!userData || !userData.uid) {
-      setError('Please login to book a court');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
     try {
+      setLoading(true);
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      if (!userData || !userData.uid) {
+        setError('Please login to book a court');
+        return;
+      }
+
       const bookingData = {
-        amount: calculatePrice(),
-        coachId: null,
+        userId: userData.uid,
         courtId: court.id,
-        date: formData.date,
         stadiumId: venue.stadiumId,
-        status: 'pending',
-        timeSlot: {
-          startTime: selectedSlot.startTime,
-          endTime: selectedSlot.endTime
-        },
-        userId: userData.uid
+        date: formData.date,
+        timeSlot: selectedSlot,
+        amount: calculatePrice(),
+        status: "confirmed",
+        coachId: null,
+        createdAt: Date.now()
       };
 
-      await addDoc(collection(db, 'bookings'), bookingData);
+      // Generate a unique ID for the booking
+      const bookingId = `${userData.uid}_${Date.now()}`;
+      const bookingRef = doc(collection(db, 'bookings'), bookingId);
+      await setDoc(bookingRef, bookingData);
+
       setShowSuccessMessage(true);
       setTimeout(() => {
         onClose();
-      }, 2000);
+        if (window.refreshProfileBookings) {
+          window.refreshProfileBookings();
+        }
+      }, 1000);
     } catch (error) {
-      setError('Failed to book the court. Please try again.');
+      console.error('Error confirming payment:', error);
+      setError('Failed to process payment. Please try again.');
     } finally {
       setLoading(false);
     }
