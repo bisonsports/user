@@ -124,10 +124,64 @@ const Navbar = () => {
     }
   }
 
-  const handleAuthSuccess = (user) => {
-    setUser(user)
-    fetchUserData(user.uid)
-  }
+  const handleAuthSuccess = async (user) => {
+    console.log("handleAuthSuccess called with user:", user); // Debug log
+    
+    // First set the user
+    setUser(user);
+    
+    // Get the latest user data from localStorage
+    const cachedData = localStorage.getItem('userData');
+    if (cachedData) {
+      try {
+        const parsedData = JSON.parse(cachedData);
+        console.log("Cached user data:", parsedData); // Debug log
+        
+        // Immediately update userData with the cached data
+        setUserData({
+          ...parsedData,
+          uid: user.uid
+        });
+      } catch (error) {
+        console.error("Error parsing cached data in handleAuthSuccess:", error);
+      }
+    }
+
+    // Fetch fresh data from Firestore
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        const firestoreData = userDoc.data();
+        console.log("Firestore data:", firestoreData); // Debug log
+        
+        setUserData({
+          ...firestoreData,
+          uid: user.uid
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching user data in handleAuthSuccess:", error);
+    }
+  };
+
+  // Add new effect to handle auth state
+  useEffect(() => {
+    const auth = getAuth();
+    // Check initial auth state
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      setUser(currentUser);
+      const cachedData = localStorage.getItem('userData');
+      if (cachedData) {
+        try {
+          const parsedData = JSON.parse(cachedData);
+          setUserData(parsedData);
+        } catch (error) {
+          console.error("Error parsing cached data:", error);
+        }
+      }
+    }
+  }, []); // Run once on mount
 
   if (loading) {
     return null // Or a loading spinner
@@ -199,9 +253,9 @@ const Navbar = () => {
             </div>
 
             <div className="nav-buttons">
-              {user && userData ? (
+              {getAuth().currentUser ? (
                 <ProfileDropdown 
-                  userData={userData} 
+                  userData={userData || { uid: user?.uid, name: user?.displayName, email: user?.email }}
                   onLogout={handleLogout}
                 />
               ) : (

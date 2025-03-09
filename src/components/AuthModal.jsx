@@ -26,10 +26,22 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
   const [resetEmail, setResetEmail] = useState('');
   const [resetSuccess, setResetSuccess] = useState(false);
   const modalRef = useRef(null);
+  const mobileModalRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
+      // Don't close if clicking inside mobile modal or if mobile modal is shown
+      if (showMobileModal && mobileModalRef.current?.contains(event.target)) {
+        return;
+      }
+      
+      // Don't close if clicking inside main modal
+      if (modalRef.current?.contains(event.target)) {
+        return;
+      }
+
+      // Only close if mobile modal is not shown
+      if (!showMobileModal) {
         onClose();
       }
     };
@@ -41,7 +53,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, showMobileModal]);
 
   const getErrorMessage = (errorCode) => {
     switch (errorCode) {
@@ -111,21 +123,25 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
         createdAt: new Date().toISOString()
       });
 
-      // Store user data in localStorage
-      const userData = {
+      // Store user data in localStorage with all necessary fields
+      const userDataToStore = {
         uid: userCredential.user.uid,
         email: userCredential.user.email,
         name: formData.name,
         mobileNo: formData.mobileNo,
         lastFetched: new Date().getTime()
       };
-      localStorage.setItem('userData', JSON.stringify(userData));
+      localStorage.setItem('userData', JSON.stringify(userDataToStore));
 
       if (typeof onAuthSuccess === 'function') {
-        onAuthSuccess(userCredential.user);
+        await onAuthSuccess(userCredential.user);
       }
+
+      // Add a small delay to ensure state updates are processed
+      await new Promise(resolve => setTimeout(resolve, 100));
       onClose(); // Close modal after successful signup
     } catch (error) {
+      console.error('Signup error:', error);
       setError(getErrorMessage(error.code));
     } finally {
       setLoading(false);
@@ -145,18 +161,27 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
         formData.password
       );
 
-      // Store user data in localStorage
-      const userData = {
+      // Get user data from Firestore
+      const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+      const userData = userDoc.exists() ? userDoc.data() : {};
+
+      // Store user data in localStorage with all necessary fields
+      const userDataToStore = {
         uid: userCredential.user.uid,
         email: userCredential.user.email,
+        name: userData.name || userCredential.user.displayName,
+        mobileNo: userData.mobileNo,
         lastFetched: new Date().getTime()
       };
-      localStorage.setItem('userData', JSON.stringify(userData));
+      localStorage.setItem('userData', JSON.stringify(userDataToStore));
 
-      // Call onAuthSuccess with the user data if it exists
+      // Call onAuthSuccess with the user data
       if (typeof onAuthSuccess === 'function') {
-        onAuthSuccess(userCredential.user);
+        await onAuthSuccess(userCredential.user);
       }
+
+      // Add a small delay to ensure state updates are processed
+      await new Promise(resolve => setTimeout(resolve, 100));
       onClose(); // Close modal after successful login
     } catch (error) {
       console.error('Login error:', error);
@@ -173,6 +198,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
     }
 
     try {
+      setLoading(true);
       // Update the user document with mobile number
       await setDoc(doc(db, 'users', googleUser.uid), {
         name: googleUser.displayName,
@@ -180,25 +206,38 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
         photoURL: googleUser.photoURL,
         mobileNo: mobileNumber,
         createdAt: new Date().toISOString()
-      }, { merge: true }); // Use merge to preserve existing data
+      }, { merge: true });
 
-      // Store user data in localStorage
-      const userData = {
+      // Store user data in localStorage with all necessary fields
+      const userDataToStore = {
         uid: googleUser.uid,
         email: googleUser.email,
         name: googleUser.displayName,
         mobileNo: mobileNumber,
         lastFetched: new Date().getTime()
       };
-      localStorage.setItem('userData', JSON.stringify(userData));
+      localStorage.setItem('userData', JSON.stringify(userDataToStore));
 
+      // Get the current auth instance and force a refresh
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+
+      // Call onAuthSuccess with the current user to trigger state update
       if (typeof onAuthSuccess === 'function') {
-        onAuthSuccess(googleUser);
+        await onAuthSuccess(currentUser);
       }
-      setShowMobileModal(false); // Close the mobile modal
-      onClose(); // Close the main auth modal
+
+      // Add a small delay to ensure state updates are processed
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Update local state
+      setShowMobileModal(false);
+      onClose();
     } catch (error) {
+      console.error('Error saving mobile number:', error);
       setError('Failed to save mobile number. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -214,36 +253,36 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
       // Check if user already exists in Firestore
       const userDoc = await getDoc(doc(db, 'users', result.user.uid));
       
-      if (!userDoc.exists()) {
-        // If new user, show mobile number collection modal
+      if (!userDoc.exists() || !userDoc.data().mobileNo) {
+        // If new user or existing user without mobile, show mobile number collection modal
         setGoogleUser(result.user);
         setShowMobileModal(true);
-      } else {
-        const firestoreData = userDoc.data();
-        if (!firestoreData.mobileNo) {
-          // If user exists but has no mobile number, show mobile number collection modal
-          setGoogleUser(result.user);
-          setShowMobileModal(true);
-        } else {
-          // Store user data in localStorage
-          const userData = {
-            uid: result.user.uid,
-            email: result.user.email,
-            name: result.user.displayName || firestoreData.name,
-            mobileNo: firestoreData.mobileNo,
-            lastFetched: new Date().getTime()
-          };
-          localStorage.setItem('userData', JSON.stringify(userData));
-
-          // If user exists with mobile number, proceed with login
-          if (typeof onAuthSuccess === 'function') {
-            onAuthSuccess(result.user);
-          }
-          onClose();
-        }
+        setLoading(false);
+        return; // Don't close the modal or call onAuthSuccess yet
       }
+
+      // If user exists with mobile number, proceed with login
+      const firestoreData = userDoc.data();
+      
+      // Store user data in localStorage with all necessary fields
+      const userDataToStore = {
+        uid: result.user.uid,
+        email: result.user.email,
+        name: result.user.displayName || firestoreData.name,
+        mobileNo: firestoreData.mobileNo,
+        lastFetched: new Date().getTime()
+      };
+      localStorage.setItem('userData', JSON.stringify(userDataToStore));
+
+      if (typeof onAuthSuccess === 'function') {
+        await onAuthSuccess(result.user);
+      }
+
+      // Add a small delay to ensure state updates are processed
+      await new Promise(resolve => setTimeout(resolve, 100));
+      onClose();
     } catch (error) {
-      console.error('Google Sign In error:', error);
+      console.error('Google sign-in error:', error);
       setError(getErrorMessage(error.code));
     } finally {
       setLoading(false);
@@ -454,7 +493,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
       {/* Mobile Number Collection Modal */}
       {showMobileModal && (
         <div className="auth-modal-overlay">
-          <div className="mobile-modal">
+          <div className="mobile-modal" ref={mobileModalRef}>
             <h2>Complete Your Profile</h2>
             <p>Please enter your mobile number to continue</p>
             {error && <div className="error-message">{error}</div>}
@@ -472,8 +511,9 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
             <button 
               className="submit-button"
               onClick={handleMobileSubmit}
+              disabled={loading}
             >
-              Continue
+              {loading ? 'Saving...' : 'Continue'}
             </button>
           </div>
         </div>
