@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { User, Calendar, ChevronDown, Clock, LogOut, Loader } from 'lucide-react';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { User, Calendar, ChevronDown, Clock, LogOut, Loader, Download } from 'lucide-react';
+import { getFirestore, collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { getAuth, signOut } from "firebase/auth";
+import { jsPDF } from 'jspdf';
 import './ProfileDropdown.css';
 
 const ProfileDropdown = ({ userData, onLogout }) => {
@@ -137,6 +138,66 @@ const ProfileDropdown = ({ userData, onLogout }) => {
     }
   };
 
+  const generateInvoice = async (booking) => {
+    try {
+      // Fetch stadium details
+      const db = getFirestore();
+      const stadiumRef = doc(db, 'stadiums', booking.stadiumId);
+      const stadiumDoc = await getDoc(stadiumRef);
+      const stadiumData = stadiumDoc.data();
+
+      // Create PDF
+      const pdf = new jsPDF();
+      
+      // Add logo or header
+      pdf.setFontSize(20);
+      pdf.setTextColor(37, 99, 235); // Blue color
+      pdf.text("Alpha Sports Booking Invoice", 105, 20, { align: "center" });
+      
+      // Add stadium info
+      pdf.setFontSize(16);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text(stadiumData.name, 105, 35, { align: "center" });
+      
+      // Add booking details
+      pdf.setFontSize(12);
+      pdf.text([
+        `Booking ID: ${booking.id}`,
+        `Date: ${booking.date}`,
+        `Time: ${booking.timeSlot.startTime} - ${booking.timeSlot.endTime}`,
+        `Court: ${booking.courtId}`,
+        `Amount Paid: ₹${booking.amount}`,
+        `Status: ${booking.status}`,
+        `\nBooked By:`,
+        `Name: ${userData.name}`,
+        `Email: ${userData.email}`,
+      ], 20, 50);
+
+      // Add rules
+      pdf.setFontSize(11);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text([
+        "\nImportant Rules & Guidelines:",
+        "1. Please arrive 15 minutes before your scheduled time",
+        "2. Carry valid ID proof for verification",
+        "3. Wear appropriate sports attire and shoes",
+        "4. No refunds for cancellations within 24 hours",
+        "5. Follow all venue safety guidelines",
+        "\nFor support, contact: support@alphasports.com"
+      ], 20, 120);
+
+      // Add footer
+      pdf.setFontSize(10);
+      pdf.setTextColor(150, 150, 150);
+      pdf.text("This is a computer generated invoice", 105, 280, { align: "center" });
+
+      // Save PDF
+      pdf.save(`booking-invoice-${booking.id}.pdf`);
+    } catch (error) {
+      console.error('Error generating invoice:', error);
+    }
+  };
+
   // Debug log for userData
   console.log("Current userData:", userData);
 
@@ -186,9 +247,18 @@ const ProfileDropdown = ({ userData, onLogout }) => {
                         </div>
                         <div className="booking-meta">
                           <span className="booking-amount">₹{booking.amount}</span>
-                          <span className={`booking-status ${booking.status}`}>
-                            {booking.status}
-                          </span>
+                          <div className="booking-actions">
+                            <span className={`booking-status ${booking.status}`}>
+                              {booking.status}
+                            </span>
+                            <button 
+                              className="download-btn"
+                              onClick={() => generateInvoice(booking)}
+                              title="Download Invoice"
+                            >
+                              <Download size={14} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>

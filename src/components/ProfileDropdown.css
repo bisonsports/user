@@ -224,12 +224,41 @@
   margin-bottom: 0.5rem;
 }
 
+.booking-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #EEF2FF;
+  border: none;
+  border-radius: 6px;
+  padding: 4px;
+  color: #4F46E5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.download-btn:hover {
+  background: #E0E7FF;
+  transform: translateY(-1px);
+}
+
+.download-btn:active {
+  transform: translateY(0);
+}
+
 .booking-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
   font-size: 0.75rem;
+  margin-top: 4px;
 }
 
 .booking-amount {
