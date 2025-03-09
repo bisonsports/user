@@ -263,3 +263,36 @@
   }
 }
 
+.auth-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #9333ea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-button:hover {
+  background-color: #7e22ce;
+  transform: translateY(-1px);
+}
+
+.auth-button .auth-icon {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 768px) {
+  .auth-button {
+    width: 100%;
+    justify-content: center;
+    margin-top: 10px;
+  }
+}
+

@@ -199,17 +199,16 @@ const Navbar = () => {
             </div>
 
             <div className="nav-buttons">
-              {!user && (
-                <button className="btn btn-secondary login-btn" onClick={handleAuthClick}>
-                  <User className="btn-icon" />
-                  <span>Login / Signup</span>
-                </button>
-              )}
-              {user && userData && (
+              {user && userData ? (
                 <ProfileDropdown 
                   userData={userData} 
                   onLogout={handleLogout}
                 />
+              ) : (
+                <button className="auth-button" onClick={() => setIsAuthModalOpen(true)}>
+                  <User className="auth-icon" />
+                  <span>Login</span>
+                </button>
               )}
             </div>
           </div>
