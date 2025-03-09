@@ -1,0 +1,66 @@
+.scan-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.scan-modal {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+}
+
+.scan-modal h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.scan-modal .close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  color: #666;
+}
+
+.scan-modal .close-button:hover {
+  color: #333;
+}
+
+#qr-reader {
+  width: 100% !important;
+  margin: 0 auto;
+}
+
+#qr-reader video {
+  border-radius: 8px;
+}
+
+#qr-reader__scan_region {
+  background: white;
+}
+
+#qr-reader__dashboard {
+  padding: 10px;
+}
+
+.scan-instructions {
+  text-align: center;
+  margin-top: 15px;
+  color: #666;
+  font-size: 14px;
+} 

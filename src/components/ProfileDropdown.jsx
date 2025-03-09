@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { User, Calendar, ChevronDown, Clock, LogOut } from 'lucide-react';
+import { User, Calendar, ChevronDown, Clock, LogOut, Loader } from 'lucide-react';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import { getAuth, signOut } from "firebase/auth";
 import './ProfileDropdown.css';
@@ -7,10 +7,11 @@ import './ProfileDropdown.css';
 const ProfileDropdown = ({ userData, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [allBookingsCache, setAllBookingsCache] = useState([]); // Cache for all bookings
+  const [allBookingsCache, setAllBookingsCache] = useState([]);
   const dropdownRef = useRef(null);
   const ITEMS_PER_PAGE = 5;
 
@@ -33,11 +34,14 @@ const ProfileDropdown = ({ userData, onLogout }) => {
     }
 
     try {
-      setLoading(true);
+      if (isInitial) {
+        setInitialLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
 
       let allBookings = [];
       
-      // Only fetch from Firestore if it's initial load or we don't have cached data
       if (isInitial || allBookingsCache.length === 0) {
         const db = getFirestore();
         const bookingsRef = collection(db, 'bookings');
@@ -64,6 +68,11 @@ const ProfileDropdown = ({ userData, onLogout }) => {
         allBookings = allBookingsCache;
       }
 
+      // Simulate 3-second loading for pagination
+      if (!isInitial) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+
       // Handle pagination
       const page = isInitial ? 0 : currentPage + 1;
       const start = page * ITEMS_PER_PAGE;
@@ -81,7 +90,11 @@ const ProfileDropdown = ({ userData, onLogout }) => {
     } catch (error) {
       console.error('Error fetching bookings:', error);
     } finally {
-      setLoading(false);
+      if (isInitial) {
+        setInitialLoading(false);
+      } else {
+        setLoadingMore(false);
+      }
     }
   };
 
@@ -160,7 +173,7 @@ const ProfileDropdown = ({ userData, onLogout }) => {
             <h4>Recent Bookings</h4>
             {bookings.length > 0 ? (
               <>
-                <div className="bookings-list">
+                <div className={`bookings-list ${loadingMore ? 'loading' : ''}`}>
                   {bookings.map((booking) => (
                     <div key={booking.id} className="booking-item">
                       <div className="booking-icon">
@@ -180,19 +193,26 @@ const ProfileDropdown = ({ userData, onLogout }) => {
                       </div>
                     </div>
                   ))}
+                  {loadingMore && (
+                    <div className="load-more-spinner">
+                      <Loader className="spinner" size={24} />
+                    </div>
+                  )}
                 </div>
-                {hasMore && (
+                {hasMore && !loadingMore && (
                   <button 
                     className="load-more-btn"
                     onClick={loadMore}
-                    disabled={loading}
                   >
-                    {loading ? 'Loading...' : 'Load More'}
+                    Load More
                   </button>
                 )}
               </>
-            ) : loading ? (
-              <p className="no-bookings">Loading bookings...</p>
+            ) : initialLoading ? (
+              <div className="initial-loading">
+                <Loader className="spinner" size={24} />
+                <span>Loading bookings...</span>
+              </div>
             ) : (
               <p className="no-bookings">No bookings found</p>
             )}
