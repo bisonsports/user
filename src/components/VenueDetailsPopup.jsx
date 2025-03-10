@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FiX, FiClock, FiMapPin, FiArrowRight } from 'react-icons/fi';
 import { IoFootball, IoBasketball, IoTennisball, IoGolf, IoBicycle, IoAmericanFootball, IoBaseball, IoFitness } from 'react-icons/io5';
 import { collection, getDocs, query, where } from 'firebase/firestore';
@@ -11,6 +11,20 @@ const VenueDetailsPopup = ({ venue, onClose }) => {
   const [selectedCourt, setSelectedCourt] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const popupRef = useRef(null);
+
+  // Add click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Only close if the booking modal is not open
+      if (!showBookingModal && popupRef.current && !popupRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [onClose, showBookingModal]);
 
   const getSportIcon = (sport) => {
     switch (sport.toLowerCase()) {
@@ -98,7 +112,7 @@ const VenueDetailsPopup = ({ venue, onClose }) => {
 
   return (
     <div className="popup-overlay">
-      <div className="popup-content">
+      <div className="popup-content" ref={popupRef}>
         <button className="close-button" onClick={onClose}>
           <FiX />
         </button>

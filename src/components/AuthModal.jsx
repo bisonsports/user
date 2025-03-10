@@ -30,6 +30,9 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // Stop event propagation to prevent parent modal from closing
+      event.stopPropagation();
+      
       // Don't close if clicking inside mobile modal or if mobile modal is shown
       if (showMobileModal && mobileModalRef.current?.contains(event.target)) {
         return;

@@ -1,10 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { X } from 'lucide-react';
 import './ScanModal.css';
 
 const ScanModal = ({ isOpen, onClose, onScanSuccess }) => {
   const [scanner, setScanner] = useState(null);
+  const modalRef = useRef(null);
+
+  // Add click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (isOpen) {
@@ -46,7 +61,7 @@ const ScanModal = ({ isOpen, onClose, onScanSuccess }) => {
 
   return (
     <div className="scan-modal-overlay">
-      <div className="scan-modal">
+      <div className="scan-modal" ref={modalRef}>
         <button className="close-button" onClick={onClose}>
           <X size={24} />
         </button>

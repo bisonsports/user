@@ -8,7 +8,8 @@ import AuthModal from './AuthModal';
 const UserBookingModal = ({ isOpen, onClose, court, venue }) => {
   const [formData, setFormData] = useState({
     date: '',
-    duration: 0,
+    duration: court?.minimumBookingDuration || 60,
+    timeSlot: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -19,6 +20,7 @@ const UserBookingModal = ({ isOpen, onClose, court, venue }) => {
   const [showPaymentConfirmation, setShowPaymentConfirmation] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const slotsGridRef = useRef(null);
+  const modalRef = useRef(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -33,6 +35,24 @@ const UserBookingModal = ({ isOpen, onClose, court, venue }) => {
       setShowSuccessMessage(false);
     }
   }, [isOpen, court]);
+
+  // Add click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Stop event propagation to prevent parent modal from closing
+      event.stopPropagation();
+      
+      // Don't close if auth modal is open
+      if (!showAuthModal && modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen, onClose, showAuthModal]);
 
   const fetchBookedSlots = async () => {
     if (!formData.date || !court.id) return;
@@ -271,7 +291,7 @@ const UserBookingModal = ({ isOpen, onClose, court, venue }) => {
 
   return (
     <div className="modal-overlay">
-      <div className="booking-modal">
+      <div className="booking-modal" ref={modalRef}>
         <button className="close-button" onClick={onClose}>
           <FiX />
         </button>

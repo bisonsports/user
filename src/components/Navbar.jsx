@@ -99,6 +99,21 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  // Add click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const navbar = document.querySelector('.navbar')
+      const menuToggle = document.querySelector('.menu-toggle')
+      
+      if (isMenuOpen && navbar && !navbar.contains(event.target) && !menuToggle.contains(event.target)) {
+        setIsMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isMenuOpen])
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
@@ -192,7 +207,7 @@ const Navbar = () => {
       <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
         <div className="container navbar-container">
           <Link to="/" className="logo">
-            <h1>PLAYO</h1>
+            <h1>Bison Sports</h1>
             <span className="logo-dot"></span>
           </Link>
 
